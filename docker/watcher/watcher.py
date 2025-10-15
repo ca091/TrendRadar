@@ -21,7 +21,7 @@ class TxtFileHandler(FileSystemEventHandler):
         Processes the detected .txt file and converts it to a structured, readable HTML file.
         """
         try:
-            print(f"Processing {file_path} with improved readability logic...", flush=True)
+            print(f"Processing {file_path} with corrected readability logic...", flush=True)
 
             with open(file_path, 'r', encoding='utf-8') as f:
                 lines = f.readlines()
@@ -29,8 +29,8 @@ class TxtFileHandler(FileSystemEventHandler):
             html_parts = []
             in_list = False  # State variable to track if we are inside an <ol> tag
 
-            title_pattern = re.compile(r'^\s*([a-zA-Z0-9_-]+)\s*|\s*(.*)\s*$')
-            item_pattern = re.compile(r'^\s*\d+\.\s+(.*)\s+\[URL:(.*?)\]\s*(?:\[ MOBILE:.*?\].*?)?\s*$')
+            # Corrected, more specific regex for list items
+            item_pattern = re.compile(r'^\s*\d+\.\s+(.*)\s+\[URL:(.*?)\]\s*(?:[ MOBILE:.*?])?\s*$')
 
             for line in lines:
                 line = line.strip()
@@ -40,15 +40,10 @@ class TxtFileHandler(FileSystemEventHandler):
                         in_list = False
                     continue
 
-                title_match = title_pattern.match(line)
                 item_match = item_pattern.match(line)
 
-                if title_match:
-                    if in_list:
-                        html_parts.append('</ol>')
-                        in_list = False
-                    html_parts.append(f'<h2>{title_match.group(1)} - {title_match.group(2)}</h2>')
-                elif item_match:
+                # First, try to match the most specific pattern: a list item
+                if item_match:
                     if not in_list:
                         html_parts.append('<ol>')
                         in_list = True
@@ -57,6 +52,21 @@ class TxtFileHandler(FileSystemEventHandler):
                     url = item_match.group(2).strip()
                     
                     html_parts.append(f'<li><a href="{url}" target="_blank" rel="noopener noreferrer">{text}</a></li>')
+                
+                # If it's not an item, check if it's a title using a simple string split
+                elif ' | ' in line:
+                    if in_list:
+                        html_parts.append('</ol>')
+                        in_list = False
+                    
+                    parts = line.split(' | ', 1)
+                    if len(parts) == 2:
+                        name, chinese_name = parts
+                        html_parts.append(f'<h2>{name.strip()} - {chinese_name.strip()}</h2>')
+                    else: # Fallback for malformed title
+                        html_parts.append(f'<p>{line}</p>')
+
+                # Fallback for any other non-empty line
                 else:
                     if in_list:
                         html_parts.append('</ol>')
@@ -77,10 +87,8 @@ class TxtFileHandler(FileSystemEventHandler):
     <meta charset="UTF-8">
     <title>{file_name_without_ext}</title>
     <style>
-        body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; margin: 2em; max-width: 800px; margin-left: auto; margin-right: auto; color: #333; }}
-        h2 {{ border-bottom: 2px solid #eee; padding-bottom: 8px; margin-top: 2.5em; }}
         ol {{ padding-left: 2em; }}
-        li {{ margin-bottom: 0.8em; }}
+        li {{ margin-bottom: 0.4em; }}
         a {{ text-decoration: none; color: #0366d6; }}
         a:hover {{ text-decoration: underline; }}
     </style>
