@@ -87,9 +87,10 @@ class TxtFileHandler(FileSystemEventHandler):
     <meta charset="UTF-8">
     <title>{file_name_without_ext}</title>
     <style>
+        body {{ background: #C7EDCC; }}
         ol {{ padding-left: 2em; }}
         li {{ margin-bottom: 0.4em; }}
-        a {{ text-decoration: none; color: #0366d6; }}
+        a {{ text-decoration: none; color: #3C3C3C; }}
         a:hover {{ text-decoration: underline; }}
     </style>
 </head>"""
