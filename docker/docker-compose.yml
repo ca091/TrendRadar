@@ -26,3 +26,14 @@ services:
       - CRON_SCHEDULE=${CRON_SCHEDULE:-*/5 * * * *}
       - RUN_MODE=${RUN_MODE:-cron}
       - IMMEDIATE_RUN=${IMMEDIATE_RUN:-true}
+
+  static-server:
+    image: python:3.10-slim
+    container_name: static-server
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../output:/static
+    working_dir: /static
+    command: python -m http.server 8000
