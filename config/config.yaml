@@ -135,6 +135,18 @@ rss:
     #   enabled: false
     #   max_age_days: 0               # 示例：禁用过滤，推送所有文章
 
+    - id: "36kr"
+      name: "36氪"
+      url: "https://36kr.com/feed"
+
+    - id: "ithome"
+      name: "IT之家"
+      url: "https://www.ithome.com/rss/"
+
+    - id: "github-trending"
+      name: "GitHub热门"
+      url: "https://rsshub.app/github/trending/daily/any"
+
 
 # ===============================================================
 # 4. 报告模式
